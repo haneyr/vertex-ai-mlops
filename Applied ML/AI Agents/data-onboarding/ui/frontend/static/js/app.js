@@ -15,6 +15,10 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    Auth.init().then(() => _initApp());
+});
+
+function _initApp() {
     const input = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const statusDot = document.getElementById('status-dot');
@@ -46,7 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (_sessionPromise) return _sessionPromise;
         _sessionPromise = (async () => {
             try {
-                const resp = await fetch('/api/sessions/', { method: 'POST' });
+                const headers = {};
+                const authToken = Auth.getToken();
+                if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+                const resp = await fetch('/api/sessions/', { method: 'POST', headers });
                 const data = await resp.json();
                 sharedSessionId = data.id || data.session_id || '';
                 console.log('[App] Created shared session:', sharedSessionId);
@@ -339,7 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function backfillTextPanel() {
         if (!sharedSessionId) return;
         try {
-            const resp = await fetch(`/api/sessions/${sharedSessionId}/history`);
+            const headers = {};
+            const authToken = Auth.getToken();
+            if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+            const resp = await fetch(`/api/sessions/${sharedSessionId}/history`, { headers });
             const data = await resp.json();
             if (data.events && data.events.length > 0) {
                 console.log('[App] Backfilling text panel:', data.events.length, 'events');
@@ -370,4 +380,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create session eagerly so it's ready for either mode
     ensureSession();
-});
+}

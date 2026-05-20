@@ -54,7 +54,9 @@ const Voice = {
         }
 
         const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const url = `${protocol}//${location.host}/ws/voice`;
+        const token = Auth.getToken();
+        const qs = token ? `?token=${encodeURIComponent(token)}` : '';
+        const url = `${protocol}//${location.host}/ws/voice${qs}`;
 
         console.log('[Voice] Connecting to', url);
         this.ws = new WebSocket(url);

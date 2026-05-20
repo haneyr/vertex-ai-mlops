@@ -25,7 +25,9 @@ class ChatSocket {
 
     connect() {
         const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const url = `${protocol}//${location.host}/ws/chat`;
+        const token = Auth.getToken();
+        const qs = token ? `?token=${encodeURIComponent(token)}` : '';
+        const url = `${protocol}//${location.host}/ws/chat${qs}`;
 
         this.ws = new WebSocket(url);
         this.onStatusChange('connecting');
