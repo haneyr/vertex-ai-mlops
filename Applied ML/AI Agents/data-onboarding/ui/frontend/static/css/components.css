@@ -912,3 +912,43 @@
     border-radius: 0.25rem;
     font-size: 0.8125rem;
 }
+
+/* --- Login screen --- */
+.login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+}
+.login-screen.hidden { display: none; }
+.login-card {
+    padding: 2.5rem;
+    border-radius: 1.25rem;
+    text-align: center;
+    min-width: 320px;
+}
+
+/* --- User profile --- */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+.user-profile.hidden { display: none; }
+.user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+.user-name {
+    font-size: 0.8rem;
+    color: var(--secondary);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

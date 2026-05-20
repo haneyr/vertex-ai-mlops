@@ -9,11 +9,21 @@
     <link href="/static/css/theme.css" rel="stylesheet" />
     <link href="/static/css/components.css" rel="stylesheet" />
     <link href="/static/css/voice.css" rel="stylesheet" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
+    <!-- Login screen (shown when OAuth is enabled and user is not authenticated) -->
+    <div id="login-screen" class="login-screen hidden">
+        <div class="login-card glass">
+            <span class="brand">Data Onboarding</span>
+            <p style="color: var(--secondary); margin: 1rem 0;">Sign in to continue</p>
+            <div id="gsi-button"></div>
+        </div>
+    </div>
+
     <!-- Background -->
     <div class="nebula-bg" style="position: fixed; inset: 0; z-index: 0; pointer-events: none;"></div>
 
@@ -49,6 +59,15 @@
             <div id="status-dot" class="status-dot"></div>
             <span id="status-text">Connecting...</span>
         </div>
+
+        <!-- User profile (shown when authenticated) -->
+        <div id="user-profile" class="user-profile hidden">
+            <img id="user-avatar" class="user-avatar" src="" alt="" style="display: none;" />
+            <span id="user-name" class="user-name"></span>
+            <button onclick="Auth.signOut()" class="session-btn" title="Sign out">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
     </header>
 
     <!-- Main content — flex column, fills viewport between top bar and input bar -->
@@ -71,6 +90,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="/static/js/auth.js"></script>
     <script src="/static/js/ws.js"></script>
     <script src="/static/js/chat.js"></script>
     <script src="/static/js/audio.js"></script>
