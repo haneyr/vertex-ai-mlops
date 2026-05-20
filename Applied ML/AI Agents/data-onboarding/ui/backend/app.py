@@ -7,7 +7,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from .routes import chat, sessions, voice
+from .routes import chat, config, sessions, voice
 
 logging.basicConfig(
     level=getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO),
@@ -25,6 +25,7 @@ app = FastAPI(title="Data Onboarding UI", version="0.1.0")
 
 # Routes
 app.include_router(chat.router)
+app.include_router(config.router)
 app.include_router(sessions.router)
 app.include_router(voice.router)
 
