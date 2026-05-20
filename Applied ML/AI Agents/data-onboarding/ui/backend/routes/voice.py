@@ -18,6 +18,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from google.genai import types
 
 from ..services import agent_engine, history
+from ..services.auth import is_auth_enabled, verify_id_token
 from ..services.event_parser import parse_event
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,13 @@ async def voice_ws(ws: WebSocket):
     5. On disconnect: clean up queues
     """
     await ws.accept()
+    if is_auth_enabled():
+        token = ws.query_params.get("token", "")
+        user = verify_id_token(token)
+        if not user:
+            await ws.send_json({"type": "error", "content": "Authentication required"})
+            await ws.close(code=4001, reason="Authentication required")
+            return
     user_id = "ui_user"
 
     # Import here to avoid loading ADK at module level

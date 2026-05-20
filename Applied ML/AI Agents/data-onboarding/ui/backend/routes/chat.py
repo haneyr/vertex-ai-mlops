@@ -6,6 +6,7 @@ import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ..services import agent_engine, history
+from ..services.auth import is_auth_enabled, verify_id_token
 from ..services.event_parser import parse_event
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,13 @@ async def chat_ws(ws: WebSocket):
     If no session_id is provided, a new session is created automatically.
     """
     await ws.accept()
+    if is_auth_enabled():
+        token = ws.query_params.get("token", "")
+        user = verify_id_token(token)
+        if not user:
+            await ws.send_json({"type": "error", "content": "Authentication required"})
+            await ws.close(code=4001, reason="Authentication required")
+            return
     user_id = "ui_user"
     session_id = None
 
