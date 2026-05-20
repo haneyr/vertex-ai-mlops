@@ -90,6 +90,7 @@ def _get_env_vars() -> dict[str, str]:
         "AGENT_ENGINE_RESOURCE_ID": os.getenv("AGENT_ENGINE_RESOURCE_ID", ""),
         "VOICE_MODEL": os.getenv("VOICE_MODEL", ""),
         "CHAT_SCOPE": os.getenv("CHAT_SCOPE", ""),
+        "OAUTH_CLIENT_ID": os.getenv("OAUTH_CLIENT_ID", ""),
     }
     for key, val in optional.items():
         if val:
