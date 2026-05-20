@@ -1,10 +1,26 @@
 """Session management endpoints."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header, HTTPException
 
 from ..services import agent_engine, history
+from ..services.auth import is_auth_enabled, verify_id_token
 
-router = APIRouter(prefix="/api/sessions", tags=["sessions"])
+
+async def _require_auth(authorization: str = Header(default="")):
+    """FastAPI dependency that enforces auth when enabled."""
+    if not is_auth_enabled():
+        return
+    token = authorization.removeprefix("Bearer ").strip()
+    user = verify_id_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+
+router = APIRouter(
+    prefix="/api/sessions",
+    tags=["sessions"],
+    dependencies=[Depends(_require_auth)],
+)
 
 
 @router.post("/")
