@@ -12,6 +12,7 @@ AGENT_ENGINE_RESOURCE_ID = os.getenv("AGENT_ENGINE_RESOURCE_ID", "")
 AGENT_MODE = os.getenv("AGENT_MODE", "agent_engine")  # "local" or "agent_engine"
 VOICE_MODEL = os.getenv("VOICE_MODEL", "gemini-live-2.5-flash-native-audio")
 CHAT_SCOPE = os.getenv("CHAT_SCOPE", "")
+OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID", "")
 
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8080"))
