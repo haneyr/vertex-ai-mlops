@@ -93,7 +93,36 @@ uv run python deploy/deploy_ui.py --update     # update existing deployment
 uv run python deploy/deploy_ui.py --delete     # delete deployment
 ```
 
-The deploy script reads `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, `AGENT_ENGINE_RESOURCE_ID`, `VOICE_MODEL`, and `CHAT_SCOPE` from `.env`. It assembles a staging directory with `ui/` files and `agent_voice/`, then runs `gcloud run deploy --source=<staging>` to build and deploy via Cloud Build. See [`deploy/readme.md`](../deploy/readme.md) for details.
+The deploy script reads `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, `AGENT_ENGINE_RESOURCE_ID`, `VOICE_MODEL`, `CHAT_SCOPE`, and `OAUTH_CLIENT_ID` from `.env`. It assembles a staging directory with `ui/` files and `agent_voice/`, then runs `gcloud run deploy --source=<staging>` to build and deploy via Cloud Build. See [`deploy/readme.md`](../deploy/readme.md) for details.
+
+### Setting Up Google OAuth
+
+Authentication is enabled automatically when `OAUTH_CLIENT_ID` is set. When deployed to Cloud Run, this gates access behind Google sign-in.
+
+**1. Create OAuth credentials:**
+1. Go to [Google Cloud Console > APIs & Credentials](https://console.cloud.google.com/apis/credentials)
+2. Click **Create Credentials** > **OAuth client ID**
+3. Application type: **Web application**
+4. Name: `data-onboarding-ui` (or any name)
+5. Add **Authorized JavaScript origins**:
+   - Your Cloud Run URL (e.g., `https://data-onboarding-ui-xxx.run.app`)
+   - `http://localhost:8080` (for local development)
+6. Click **Create** and copy the **Client ID**
+
+**2. Configure and deploy:**
+```bash
+# Add to .env
+echo "OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com" >> .env
+
+# Deploy (or update existing deployment)
+uv run python deploy/deploy_ui.py --update
+```
+
+**3. Add authorized origin:**
+
+After deploying, add the Cloud Run service URL as an authorized JavaScript origin in the OAuth client configuration. The URL is shown in the deploy output or via `deploy_ui.py --info`.
+
+> **Note:** OAuth is optional for local development. When `OAUTH_CLIENT_ID` is not set, the UI works without authentication.
 
 ---
 
@@ -177,6 +206,7 @@ Before making a full `agent_chat` call, the bridge tool checks faster paths: cac
 | `AGENT_ENGINE_RESOURCE_ID` | — | Agent Engine resource ID (required when `AGENT_MODE=agent_engine`) |
 | `CHAT_SCOPE` | *(empty)* | Restrict agent to specific dataset(s) — see [main README](../readme.md#configuration) |
 | `CONVO_THINKING_MODE` | `THINKING` | Conversational Analytics API thinking mode — `THINKING` or `FAST` |
+| `OAUTH_CLIENT_ID` | *(empty)* | Google OAuth 2.0 client ID. When set, requires Google sign-in. |
 | `HOST` | `0.0.0.0` | Server bind address |
 | `PORT` | `8080` | Server port |
 
